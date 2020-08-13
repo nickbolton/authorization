@@ -30,7 +30,7 @@ public class UserTokenServices implements ResourceServerTokenServices, Initializ
 
         JWTTokenPayload payload;
         try {
-            payload = userTokenProvider.decodeAuthorizationToken(accessToken, false);
+            payload = userTokenProvider.decodeAuthorizationToken(accessToken, null,false);
         } catch (ErrorCodedHttpException e) {
             throw new InvalidTokenException(e.getMessage(), e);
         }

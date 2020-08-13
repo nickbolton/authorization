@@ -148,7 +148,7 @@ public class UserTokenProvider {
         return false;
     }
 
-    public <T extends JWTTokenPayload> T decodeAuthorizationToken(String token, Boolean remove) {
+    public <T extends JWTTokenPayload> T decodeAuthorizationToken(String token, ClassLoader classLoader, Boolean remove) {
         if (token == null) {
             throw new ErrorCodedHttpException(HttpStatus.BAD_REQUEST, AuthErrorCodes.NO_TOKEN);
         }
@@ -174,7 +174,10 @@ public class UserTokenProvider {
                 throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.TOKEN_EXPIRED);
             }
 
-            Class clazz = Class.forName(payload.getTokenType());
+            Class clazz = classLoader != null ?
+                    classLoader.loadClass(payload.getTokenType()) :
+                    Class.forName(payload.getTokenType());
+
             T result = (T) mapper.readValue(subject, clazz);
 
             if (remove) {

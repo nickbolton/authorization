@@ -74,7 +74,7 @@ public class GoogleRefreshTokenProvider implements RefreshTokenProvider {
       String namespacedRefreshToken = authorizationTokenTypeResolver.namespaceToken(refreshToken, AuthorizationTokenType.GOOGLE);
 
       UserToken userToken = userTokenOptional.get();
-      GoogleTokenPayload tokenPayload = userTokenProvider.decodeAuthorizationToken(userToken.getPayload(), false);
+      GoogleTokenPayload tokenPayload = userTokenProvider.decodeAuthorizationToken(userToken.getPayload(), null, false);
       tokenPayload.setAccessToken(accessToken);
 
       try {
