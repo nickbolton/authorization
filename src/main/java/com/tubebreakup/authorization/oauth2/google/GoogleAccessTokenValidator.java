@@ -4,15 +4,11 @@ import com.tubebreakup.authorization.model.userToken.UserToken;
 import com.tubebreakup.authorization.model.userToken.UserTokenDao;
 import com.tubebreakup.authorization.model.userToken.UserTokenProvider;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
 import java.util.Optional;
 
 public class GoogleAccessTokenValidator implements AccessTokenValidator {
-
-  protected Logger logger = LoggerFactory.getLogger(getClass());
 
   @Setter private UserTokenDao userTokenDao;
   @Setter private UserTokenProvider userTokenProvider;

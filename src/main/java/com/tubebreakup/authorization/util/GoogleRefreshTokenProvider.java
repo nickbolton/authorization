@@ -10,12 +10,15 @@ import com.tubebreakup.authorization.oauth2.AuthorizationTokenType;
 import com.tubebreakup.authorization.oauth2.google.GoogleTokenPayload;
 import com.tubebreakup.exception.CommonErrors;
 import com.tubebreakup.exception.ErrorCodedHttpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -23,6 +26,8 @@ import java.util.Optional;
 
 @Component
 public class GoogleRefreshTokenProvider implements RefreshTokenProvider {
+
+  protected Logger logger = LoggerFactory.getLogger(getClass());
 
   @Autowired
   private GoogleClientSecrets.Details googleClientDetails;
@@ -42,8 +47,6 @@ public class GoogleRefreshTokenProvider implements RefreshTokenProvider {
   @Override
   public AccessTokenResponseDto refreshAccessToken(String refreshToken) {
     try {
-      final String url = "https://oauth2.googleapis.com/token";
-
       Optional<UserToken> userTokenOptional = userTokenRepository.findByRefreshToken(refreshToken);
       if (!userTokenOptional.isPresent()) {
         throw new ErrorCodedHttpException(
@@ -53,17 +56,7 @@ public class GoogleRefreshTokenProvider implements RefreshTokenProvider {
         );
       }
 
-      MultiValueMap<String, String> bodyMap = new LinkedMultiValueMap<String, String>();
-      bodyMap.add("client_id", googleClientDetails.getClientId());
-      bodyMap.add("client_secret", googleClientDetails.getClientSecret());
-      bodyMap.add("refresh_token", refreshToken);
-      bodyMap.add("grant_type", "refresh_token");
-
-      HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-      HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyMap, headers);
-      ResponseEntity<Map> result = restTemplate.postForEntity(url, entity, Map.class);
+      ResponseEntity<Map> result = sendRefreshRequest(refreshToken);
 
       String accessToken = (String) result.getBody().get("access_token");
       String tokenType = (String) result.getBody().get("token_type");
@@ -101,6 +94,28 @@ public class GoogleRefreshTokenProvider implements RefreshTokenProvider {
       );
     } catch (HttpClientErrorException e) {
       throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, CommonErrors.BAD_CREDENTIALS);
+    }
+  }
+
+  private ResponseEntity<Map> sendRefreshRequest(String refreshToken) {
+    final String url = "https://oauth2.googleapis.com/token";
+
+    MultiValueMap<String, String> bodyMap = new LinkedMultiValueMap<String, String>();
+    bodyMap.add("client_id", googleClientDetails.getClientId());
+    bodyMap.add("client_secret", googleClientDetails.getClientSecret());
+    bodyMap.add("refresh_token", refreshToken);
+    bodyMap.add("grant_type", "refresh_token");
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+    HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(bodyMap, headers);
+    try {
+      return restTemplate.postForEntity(url, entity, Map.class);
+    } catch (RestClientException e) {
+      String message = "Failed refreshing google token";
+      logger.error(message, e);
+      throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.BAD_TOKEN, message);
     }
   }
 }
