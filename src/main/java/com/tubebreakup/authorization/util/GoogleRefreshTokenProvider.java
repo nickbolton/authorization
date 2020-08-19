@@ -52,7 +52,7 @@ public class GoogleRefreshTokenProvider implements RefreshTokenProvider {
         throw new ErrorCodedHttpException(
                 HttpStatus.UNAUTHORIZED,
                 CommonErrors.RESOURCE_NOT_FOUND,
-                "No user token found for refreshToken"
+                String.format("No user token found for refreshToken: %s", refreshToken)
         );
       }
 
