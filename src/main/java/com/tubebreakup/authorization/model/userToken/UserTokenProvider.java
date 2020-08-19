@@ -175,7 +175,7 @@ public class UserTokenProvider {
             }
 
             UserToken userToken = optional.get();
-            if (new Date().getTime() > userToken.getExpirationDate().getTime()) {
+            if (userToken.isExpired()) {
                 throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.TOKEN_EXPIRED, "Token expired");
             }
 

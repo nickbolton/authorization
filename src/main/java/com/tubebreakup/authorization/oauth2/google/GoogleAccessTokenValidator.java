@@ -17,11 +17,13 @@ public class GoogleAccessTokenValidator implements AccessTokenValidator {
   public GoogleTokenPayload validate(String accessToken) {
     Optional<UserToken> optional = userTokenDao.findByToken(accessToken);
     if (!optional.isPresent()) {
-      throw new UnauthorizedUserException("Missing user token.");
+      String message = String.format("Missing user token: %s", accessToken);
+      throw new UnauthorizedUserException(message);
     }
     UserToken userToken = optional.get();
     if (userToken.isExpired()) {
-      throw new UnauthorizedUserException("Expired token.");
+      String message = String.format("Expired token: %s", accessToken);
+      throw new UnauthorizedUserException(message);
     }
     try {
       return userTokenProvider.decodeAuthorizationToken(userToken.getPayload(), null,false);
