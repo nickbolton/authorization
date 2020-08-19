@@ -50,7 +50,7 @@ public class UserTokenProvider {
             userToken = optional.get();
             userToken.setToken(token);
         } else {
-            userToken = new UserToken(email, token, "", "", tokenType, null);
+            userToken = new UserToken(email, token, null, "", tokenType, null);
         }
         return userToken;
     }
@@ -71,7 +71,7 @@ public class UserTokenProvider {
             if (optional.isPresent()) {
                 userToken = optional.get();
             } else {
-                userToken = userTokenDao.save(new UserToken(email, "", "", "", UserTokenType.OAUTH2, new Date()));
+                userToken = userTokenDao.save(new UserToken(email, "", null, "", UserTokenType.OAUTH2, new Date()));
             }
         }
         return updateOAuth2Token(userToken, email, accessToken, refreshToken, expirationMinutes, payload);
@@ -114,7 +114,7 @@ public class UserTokenProvider {
         if (optional.isPresent()) {
             userToken = optional.get();
         } else {
-            userToken = userTokenDao.save(new UserToken(recipientEmail, "", "", "", UserTokenType.AUTHORIZATION, new Date()));
+            userToken = userTokenDao.save(new UserToken(recipientEmail, "", null, "", UserTokenType.AUTHORIZATION, new Date()));
         }
 
         payload.setUserTokenId(userToken.getUuid());
