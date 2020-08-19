@@ -171,7 +171,12 @@ public class UserTokenProvider {
 
             Optional<UserToken> optional = userTokenDao.findById(payload.getUserTokenId());
             if (!optional.isPresent()) {
-                throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.TOKEN_EXPIRED);
+                throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.TOKEN_EXPIRED, "No token found");
+            }
+
+            UserToken userToken = optional.get();
+            if (new Date().getTime() > userToken.getExpirationDate().getTime()) {
+                throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.TOKEN_EXPIRED, "Token expired");
             }
 
             Class clazz = classLoader != null ?
@@ -181,7 +186,7 @@ public class UserTokenProvider {
             T result = (T) mapper.readValue(subject, clazz);
 
             if (remove) {
-                userTokenDao.delete(optional.get());
+                userTokenDao.delete(userToken);
             }
             return result;
         } catch (JWTVerificationException e) {
