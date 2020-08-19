@@ -1,6 +1,8 @@
 package com.tubebreakup.authorization.oauth2;
 
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
@@ -11,6 +13,8 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 public class TokenServices implements ResourceServerTokenServices {
+
+  private Logger logger = LoggerFactory.getLogger(getClass());
 
   private ResourceServerTokenServices defaultTokenServices;
 
@@ -38,11 +42,13 @@ public class TokenServices implements ResourceServerTokenServices {
   @Override
   public OAuth2Authentication loadAuthentication(String accessToken)
       throws AuthenticationException, InvalidTokenException {
+    logger.info("Loading authentication for accessToken: {}", accessToken);
     return getDefaultTokenServices().loadAuthentication(accessToken);    
   }
 
   @Override
   public OAuth2AccessToken readAccessToken(String accessToken) {
+    logger.info("Reading accessToken: {}", accessToken);
     return getDefaultTokenServices().readAccessToken(accessToken);
   }
 
