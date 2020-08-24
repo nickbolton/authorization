@@ -26,7 +26,7 @@ public class GoogleAccessTokenValidator implements AccessTokenValidator {
       throw new UnauthorizedUserException(message);
     }
     try {
-      return userTokenProvider.decodeAuthorizationToken(userToken.getPayload(), null,false);
+      return userTokenProvider.decodeAuthorizationToken(userToken.getPayload(), null,false, false);
     } catch (Exception e) {
       throw new UnauthorizedUserException("Token not decoded successfully.");
     }

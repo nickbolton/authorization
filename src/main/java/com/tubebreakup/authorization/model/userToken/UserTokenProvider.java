@@ -148,7 +148,7 @@ public class UserTokenProvider {
         return false;
     }
 
-    public <T extends JWTTokenPayload> T decodeAuthorizationToken(String token, ClassLoader classLoader, Boolean remove) {
+    public <T extends JWTTokenPayload> T decodeAuthorizationToken(String token, ClassLoader classLoader, Boolean remove, Boolean ignoreExpiration) {
         if (token == null) {
             throw new ErrorCodedHttpException(HttpStatus.BAD_REQUEST, AuthErrorCodes.NO_TOKEN);
         }
@@ -158,12 +158,21 @@ public class UserTokenProvider {
         if (token.startsWith(authorizationPrefix)) {
             token = token.replace(authorizationPrefix, "");
         }
+        if (remove == null) {
+            remove = false;
+        }
+        if (ignoreExpiration == null) {
+            ignoreExpiration = false;
+        }
 
         try {
-            String subject = JWT.require(HMAC512(secret.getBytes()))
-                    .build()
-                    .verify(token)
-                    .getSubject();
+            String subject;
+
+            if (ignoreExpiration) {
+                subject = JWT.require(HMAC512(secret.getBytes())).acceptExpiresAt(Long.MAX_VALUE).build().verify(token).getSubject();
+            } else {
+                subject = JWT.require(HMAC512(secret.getBytes())).build().verify(token).getSubject();
+            }
 
             ObjectMapper mapper = new ObjectMapper()
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -175,7 +184,7 @@ public class UserTokenProvider {
             }
 
             UserToken userToken = optional.get();
-            if (userToken.isExpired()) {
+            if (!ignoreExpiration && userToken.isExpired()) {
                 throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.TOKEN_EXPIRED, "Token expired");
             }
 
