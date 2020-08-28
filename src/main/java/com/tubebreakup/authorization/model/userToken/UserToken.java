@@ -3,6 +3,7 @@ package com.tubebreakup.authorization.model.userToken;
 import com.tubebreakup.model.BaseModel;
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,6 +19,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(indexes = {
         @Index(name = "user_token_email_tok_idx", columnList = "email, token"),
@@ -81,9 +83,5 @@ public class UserToken extends BaseModel {
     this.payload = payload;
     this.type = type;
     this.expirationDate = expirationDate;
-  }
-  
-  protected UserToken() {
-    super();
   }
 }
