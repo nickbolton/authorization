@@ -27,6 +27,8 @@ public class UserTokenProvider {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final Long ignoreExpiresAt = (Long.MAX_VALUE / 1000) - 1;
+
     @Value("${token.auth.prefix}")
     private String bearerPrefix;
 
@@ -169,7 +171,7 @@ public class UserTokenProvider {
             String subject;
 
             if (ignoreExpiration) {
-                subject = JWT.require(HMAC512(secret.getBytes())).acceptExpiresAt(Long.MAX_VALUE).build().verify(token).getSubject();
+                subject = JWT.require(HMAC512(secret.getBytes())).acceptExpiresAt(ignoreExpiresAt).build().verify(token).getSubject();
             } else {
                 subject = JWT.require(HMAC512(secret.getBytes())).build().verify(token).getSubject();
             }
@@ -199,7 +201,7 @@ public class UserTokenProvider {
             }
             return result;
         } catch (JWTVerificationException e) {
-            throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.TOKEN_EXPIRED);
+            throw new ErrorCodedHttpException(HttpStatus.UNAUTHORIZED, AuthErrorCodes.TOKEN_EXPIRED, e);
         } catch (IOException | ClassNotFoundException e) {
             throw new ErrorCodedHttpException(HttpStatus.INTERNAL_SERVER_ERROR, AuthErrorCodes.BAD_TOKEN, e);
         }
