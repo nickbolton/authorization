@@ -1,10 +1,12 @@
 package com.tubebreakup.authorization.model.userToken;
 
 import com.tubebreakup.model.BaseEntityDao;
+import com.tubebreakup.model.cache.DefaultResourceCache;
 import com.tubebreakup.model.config.AppConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -14,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class UserTokenDao extends BaseEntityDao<UserToken> {
 
-    private final String CACHE_NAME = "UserTokenCache";
+    private final String NAMESPACE = "TubeBreakup";
 
     @Autowired
     @Getter
@@ -74,7 +76,12 @@ public class UserTokenDao extends BaseEntityDao<UserToken> {
     }
 
     @Override
-    protected String getCacheName() {
-        return CACHE_NAME;
+    protected String getCacheNamespace() {
+        return NAMESPACE;
+    }
+
+    @Override
+    protected String getEntityName() {
+        return UserToken.class.getSimpleName();
     }
 }
