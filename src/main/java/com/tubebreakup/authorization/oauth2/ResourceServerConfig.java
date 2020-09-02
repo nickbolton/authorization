@@ -1,7 +1,7 @@
 package com.tubebreakup.authorization.oauth2;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.tubebreakup.authorization.model.userToken.UserTokenDao;
+import com.tubebreakup.authorization.model.userToken.UserTokenService;
 import com.tubebreakup.authorization.model.userToken.UserTokenProvider;
 import com.tubebreakup.authorization.oauth2.google.AccessTokenValidator;
 import com.tubebreakup.authorization.oauth2.google.GoogleAccessTokenValidator;
@@ -26,7 +26,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter implements InitializingBean {
 
     @Autowired
-    private UserTokenDao userTokenDao;
+    private UserTokenService userTokenDao;
 
     private GoogleTokenServices googleTokenServices;
 

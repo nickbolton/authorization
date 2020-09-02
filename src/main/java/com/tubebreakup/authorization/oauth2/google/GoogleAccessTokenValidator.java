@@ -1,7 +1,7 @@
 package com.tubebreakup.authorization.oauth2.google;
 
 import com.tubebreakup.authorization.model.userToken.UserToken;
-import com.tubebreakup.authorization.model.userToken.UserTokenDao;
+import com.tubebreakup.authorization.model.userToken.UserTokenService;
 import com.tubebreakup.authorization.model.userToken.UserTokenProvider;
 import lombok.Setter;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class GoogleAccessTokenValidator implements AccessTokenValidator {
 
-  @Setter private UserTokenDao userTokenDao;
+  @Setter private UserTokenService userTokenDao;
   @Setter private UserTokenProvider userTokenProvider;
 
   @Override

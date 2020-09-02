@@ -42,7 +42,7 @@ public class UserTokenProvider {
     private UniqueTokenProvider tokenProvider;
 
     @Autowired
-    private UserTokenDao userTokenDao;
+    private UserTokenService userTokenDao;
 
     public UserToken fetchUserToken(String email, UserTokenType tokenType) {
         UserToken userToken;
