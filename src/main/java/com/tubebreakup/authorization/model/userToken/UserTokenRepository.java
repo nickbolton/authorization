@@ -15,6 +15,6 @@ public interface UserTokenRepository extends JpaRepository<UserToken, String> {
   Optional<UserToken> findByRefreshToken(String refreshToken);
 
   @Modifying
-  @Query("delete from UserToken t where t.expirationDate <= :now")
+  @Query("delete from UserToken t where t.type != 'OAUTH2' AND t.expirationDate <= :now")
   void deleteAllExpiredSince(Date now);
 }
