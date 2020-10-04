@@ -3,6 +3,8 @@ package com.tubebreakup.authorization.model.user;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.util.Set;
+
 @JsonSerialize
 public enum AuthUserRole {
     ROLE_SYSTEM(0),
@@ -19,5 +21,13 @@ public enum AuthUserRole {
 
     public Integer value() {
         return value;
+    }
+
+    public Boolean userHasRole(AuthUser user) {
+        if (user == null) {
+            return false;
+        }
+        Set<AuthUserRole> roles = user.getRoles();
+        return roles != null && roles.contains(this);
     }
 }

@@ -1,5 +1,7 @@
 package com.tubebreakup.authorization.model.user;
 
+import java.util.Set;
+
 public interface AuthUser {
-    AuthUserRole getRole();
+    Set<AuthUserRole> getRoles();
 }
